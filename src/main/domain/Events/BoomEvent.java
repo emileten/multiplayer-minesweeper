@@ -1,4 +1,4 @@
-package main.domain;
+package main.domain.Events;
 
 public class BoomEvent implements Event {
 

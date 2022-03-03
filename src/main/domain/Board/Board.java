@@ -1,4 +1,6 @@
-package main.domain;
+package main.domain.Board;
+
+import main.domain.Events.Event;
 
 /** Represents the board of a minesweeper game.
  * Abstractly, in a minesweeper game, players manipulate a set of locations that are all hidden in the first place.

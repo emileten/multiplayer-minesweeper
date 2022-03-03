@@ -3,7 +3,7 @@ package tests.domain;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import main.domain.BoomEvent;
+import main.domain.Events.BoomEvent;
 
 
 class BoomEventTest {

@@ -1,4 +1,4 @@
-package main.domain;
+package main.domain.Events;
 
 /** Represents events happening during a Minesweeper game. */
 public interface Event {
