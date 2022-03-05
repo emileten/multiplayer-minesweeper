@@ -66,9 +66,7 @@ public class ConcurrentBoundedPlayersQueue implements BoundedPlayersQueue {
 		}
 	}
 	
-	/**
-	 * @return the maximum capacity of this queue
-	 */
+
 	@Override
 	public int getMaximumCapacity() {
 		int max_capacity = this.maximum_capacity;
@@ -82,6 +80,12 @@ public class ConcurrentBoundedPlayersQueue implements BoundedPlayersQueue {
 		int default_max_capacity = DEFAULT_MAXIMUM_CAPACITY;
 		return default_max_capacity;
 	}
+	
+	public int getNumberOfPlayers() {
+		return player_queue.size();
+	}
+	
+	
 	
 
 }

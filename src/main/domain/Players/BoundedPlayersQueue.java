@@ -38,5 +38,10 @@ public interface BoundedPlayersQueue {
 	 * @return the maximum capacity of this queue
 	 */
 	int getMaximumCapacity();
+	
+	/**
+	 * @return the number of players in this queue
+	 */
+	int getNumberOfPlayers();
 
 }

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.*;
+
 import main.domain.Players.*;
 import main.domain.Exceptions.*;
 
@@ -39,7 +41,7 @@ class ConcurrentBoundedPlayersQueueTest {
 
 
 	@Test
-	void removePlayer() throws MaxNumOfPlayersReachedException {
+	void testRemovePlayer() throws MaxNumOfPlayersReachedException {
 		//should be able to remove a player that's in a queue, but not a player that's not in it
 		ConcurrentBoundedPlayersQueue testqueue = new ConcurrentBoundedPlayersQueue(2);
 		Player testplayer1 = new StringPlayer("testplayer1");
@@ -54,8 +56,9 @@ class ConcurrentBoundedPlayersQueueTest {
 
 	}
 	
+	
 	@Test
-	void addPlayer() throws MaxNumOfPlayersReachedException {
+	void testAddPlayer() throws MaxNumOfPlayersReachedException {
 		//a queue with one player and a max capacity of one should not accept more players.
 		ConcurrentBoundedPlayersQueue testqueue = new ConcurrentBoundedPlayersQueue(ConcurrentBoundedPlayersQueue.getDefaultMaximumCapacity());
 		StringPlayer testplayer = new StringPlayer("testplayer");
@@ -67,9 +70,53 @@ class ConcurrentBoundedPlayersQueueTest {
 		assertEquals("The maximum number of player : " + testqueue.getMaximumCapacity() + " is reached, cannot add a new player", thrown.getMessage());
 
 	}
+	
+	class PlayerAdder implements Runnable {
+		
+		private final BoundedPlayersQueue playerQueue;
+		private final String playerID;
+		
+		public PlayerAdder(BoundedPlayersQueue queue, String id) {
+			this.playerQueue = queue;
+			this.playerID = id;
+		}
+		
+		public void run() {
+			try {
+				int sizeBefore = this.playerQueue.getNumberOfPlayers();
+				this.playerQueue.addPlayer(new StringPlayer("player " + this.playerID));
+				System.out.println("added player : " + this.playerID + ". Size before : " + String.valueOf(sizeBefore) + ". Size after : " + String.valueOf(this.playerQueue.getNumberOfPlayers()));
+			} catch (MaxNumOfPlayersReachedException e) {
+				System.out.println(e.getMessage());
+				System.out.println("pass");
+			}
+		}
+		
+	}
+
+	
+	@Test
+	void testAddPlayerConcurrent() throws InterruptedException, MaxNumOfPlayersReachedException {
+		int numberOfThreads = 40;
+		CountDownLatch latch = new CountDownLatch(numberOfThreads);
+		ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+		ConcurrentBoundedPlayersQueue testqueue = new ConcurrentBoundedPlayersQueue(10);
+	    for (int i = 0; i < numberOfThreads; i++) {
+	    	final int local_i = i; // workaround 
+	    	executor.execute(() -> {
+	    		new PlayerAdder(testqueue, String.valueOf(local_i));
+	    		latch.countDown();
+	    	});
+	    	
+	    }
+	    latch.await();
+	    System.out.println(testqueue.getNumberOfPlayers());
+	    //assertEquals(numberOfThreads, testqueue.getNumberOfPlayers());
+	}
+	
 
 	@Test
-	void nextPlayerTestOnePlayer() throws NoPlayersInGameException, MaxNumOfPlayersReachedException {
+	void testNextPlayerOnePlayer() throws NoPlayersInGameException, MaxNumOfPlayersReachedException {
 		//a queue with one player should always have as next player that single player it contains 
 		ConcurrentBoundedPlayersQueue testqueue = new ConcurrentBoundedPlayersQueue(ConcurrentBoundedPlayersQueue.getDefaultMaximumCapacity());
 		StringPlayer testplayer = new StringPlayer("testplayer");
@@ -80,7 +127,7 @@ class ConcurrentBoundedPlayersQueueTest {
 	}
 	
 	@Test
-	void nextPlayerTestTwoPlayers() throws NoPlayersInGameException, MaxNumOfPlayersReachedException {
+	void testNextPlayerTwoPlayers() throws NoPlayersInGameException, MaxNumOfPlayersReachedException {
 		ConcurrentBoundedPlayersQueue testqueue = new ConcurrentBoundedPlayersQueue(2);
 		Player testplayer1 = new StringPlayer("testplayer1");
 		Player testplayer2 = new StringPlayer("testplayer2");
@@ -92,7 +139,7 @@ class ConcurrentBoundedPlayersQueueTest {
 	}
 	
 	@Test
-	void nextPlayerTestNoPlayer() {
+	void testNextPlayerNoPlayer() {
 		ConcurrentBoundedPlayersQueue testqueue = new ConcurrentBoundedPlayersQueue(ConcurrentBoundedPlayersQueue.getDefaultMaximumCapacity());
 		
 		NoPlayersInGameException thrown = Assertions.assertThrows(NoPlayersInGameException.class, () -> {
@@ -101,6 +148,19 @@ class ConcurrentBoundedPlayersQueueTest {
 		
 		assertEquals("Cannot return the next player of an empty player queue", thrown.getMessage());
 	}
+	
+	@Test
+	void testGetNumberOfPlayers() throws MaxNumOfPlayersReachedException {
+		ConcurrentBoundedPlayersQueue testqueue = new ConcurrentBoundedPlayersQueue(2);
+		assertEquals(testqueue.getNumberOfPlayers(), 0);
+		Player testplayer1 = new StringPlayer("testplayer1");
+		Player testplayer2 = new StringPlayer("testplayer2");
+		testqueue.addPlayer(testplayer1);
+		testqueue.addPlayer(testplayer2);
+		assertEquals(testqueue.getNumberOfPlayers(), 2);
+		
+	}
 
+	
 
 }
