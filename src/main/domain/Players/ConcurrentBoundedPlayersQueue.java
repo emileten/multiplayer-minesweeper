@@ -66,6 +66,14 @@ public class ConcurrentBoundedPlayersQueue implements BoundedPlayersQueue {
 		}
 	}
 	
+	@Override
+	public synchronized Player showNextPlayer() throws NoPlayersInGameException {
+		if (this.getNumberOfPlayers()==0){
+			throw new NoPlayersInGameException("There are no players in the queue");
+		}
+		Player nextPlayer = player_queue.peekFirst();
+		return nextPlayer;
+	}
 
 	@Override
 	public int getMaximumCapacity() {

@@ -1,12 +1,13 @@
 package main.domain.Events;
 
-public class SuccessfullyDugEvent implements Event {
+public class BoomDigEvent implements DigEvent {
 
-	private final String message; 
+	private final String message;
 	
-	public SuccessfullyDugEvent(String message) {
+	public BoomDigEvent(String message) {
 		this.message = message;
 	}
+	
 	@Override
 	public String getMessage() {
 		String out = new String(this.message);

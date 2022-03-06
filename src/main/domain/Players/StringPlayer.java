@@ -8,14 +8,19 @@ public class StringPlayer implements Player {
 		this.player_id = id;
 	}
 	
-	@Override
 	public String getID() {
 		String id = new String(this.player_id);
 		return id;
 	}
 	
-	public boolean equals(Player other) {
-		return this.player_id.equals(other.getID());
+	@Override
+	public boolean equals(Object o) {
+		return this.hashCode() == o.hashCode();
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getID().hashCode();
 	}
 
 }

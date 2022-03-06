@@ -1,17 +1,17 @@
-package tests.domain;
+package tests.domain.Events;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import main.domain.Events.BoomEvent;
+import main.domain.Events.BoomDigEvent;
 
 
-class BoomEventTest {
+class BoomDigEventTest {
 
 	@Test
 	void testGetMessage() {
 		String testMessageString = "Boom ! There was a bomb !";
-		BoomEvent testEvent = new BoomEvent(testMessageString);
+		BoomDigEvent testEvent = new BoomDigEvent(testMessageString);
 		
 		assertEquals(testEvent.getMessage(), testMessageString, "expected the following String : ".concat(testMessageString));
 	}

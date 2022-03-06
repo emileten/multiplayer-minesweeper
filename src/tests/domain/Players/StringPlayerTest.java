@@ -22,6 +22,12 @@ class StringPlayerTest {
 
 		assertTrue(testplayer1.equals(testplayer3));
 		assertFalse(testplayer1.equals(testplayer2));
+		
+
+		// also checks consistency with hashCode()
+		assertEquals(new StringPlayer("test_player4"), new StringPlayer("test_player4"));
+		assertNotEquals(new StringPlayer("test_player4"), new StringPlayer("test_player5"));
+
 
 	}
 

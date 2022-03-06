@@ -35,6 +35,12 @@ public interface BoundedPlayersQueue {
 	void removePlayer(Player player) throws NoSuchElementException;
 	
 	/**
+	 * @return the first player of the queue but does not modify the queue.
+	 * @throws NoPlayersInGameException of there are no players in the queue. 
+	 */
+	Player showNextPlayer() throws NoPlayersInGameException;
+	
+	/**
 	 * @return the maximum capacity of this queue
 	 */
 	int getMaximumCapacity();
