@@ -23,8 +23,8 @@ class ArrayBoardTest {
 	void digTestSuccessfulDig() {
 		
 		ArrayBoard testBoard = ArrayBoard.smallFactoryBoard();
-		DigEvent resultDigEvent = testBoard.dig(0);
-		assertTrue(resultDigEvent instanceof SuccessfullDigEvent);
+		Event resultDigEvent = testBoard.dig(0);
+		assertTrue(resultDigEvent instanceof DugEvent);
 		
 	}
 	
@@ -32,8 +32,8 @@ class ArrayBoardTest {
 	void digTestBomb() {
 
 		ArrayBoard testBoard = ArrayBoard.smallFactoryBoard();
-		DigEvent resultDigEvent = testBoard.dig(4);
-		assertTrue(resultDigEvent instanceof BoomDigEvent);
+		Event resultDigEvent = testBoard.dig(4);
+		assertTrue(resultDigEvent instanceof BoomEvent);
 		
 	}
 	
@@ -42,8 +42,8 @@ class ArrayBoardTest {
 		
 		ArrayBoard testBoard = ArrayBoard.smallFactoryBoard();
 		testBoard.dig(0);
-		DigEvent resultDigEvent2 = testBoard.dig(0);
-		assertTrue(resultDigEvent2 instanceof SuccessfullDigEvent);
+		Event resultDigEvent2 = testBoard.dig(0);
+		assertTrue(resultDigEvent2 instanceof AlreadyDugEvent);
 
 	}
 	
@@ -51,7 +51,7 @@ class ArrayBoardTest {
 	void digTestAllDug() {
 
 		ArrayBoard testBoard = ArrayBoard.smallFactoryBoard();
-		DigEvent lastDigEvent = new SuccessfullDigEvent("initiating");
+		Event lastDigEvent = new DugEvent();
 		// digging all the locations that do not have a bomb. 
 		for (int i = 0; i < testBoard.getSize(); i++) {
 			if (Arrays.binarySearch(ArrayBoard.smallFactoryBoardBombsLocation(), i) < 0) {

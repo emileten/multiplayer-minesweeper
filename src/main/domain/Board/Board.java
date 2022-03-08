@@ -12,7 +12,7 @@ public interface Board {
 	 * @param position
 	 * @return an DigEvent object 
 	 */
-	DigEvent dig(int position);
+	Event dig(int position);
 	
 	/** attempts to assign the 'flagged' property to a location
 	 * does nothing if it's already assigned to that location, or if it's already dug. 

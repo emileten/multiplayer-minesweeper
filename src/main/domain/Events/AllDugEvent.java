@@ -1,16 +1,13 @@
 package main.domain.Events;
 
-public class AllDugEvent implements DigEvent {
 
-	private final String message;
+public class AllDugEvent implements Event {
 	
-	public AllDugEvent(String message) {
-		this.message = message;
-	}
+	private final String message = "Congratulations ! Every cell is discovered.";
 	
-	@Override
-	public String getMessage() {
-		String out = new String(this.message);
-		return out;
+	public String toString() {
+		return this.message;
 	}
+
+
 }

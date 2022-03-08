@@ -28,22 +28,22 @@ public class ArrayBoard implements Board {
 	}
 	
 	@Override
-	public DigEvent dig(int position) {
+	public Event dig(int position) {
 		if (this.board[position].hasBomb == true) {
-			return new BoomDigEvent("Boom!");
+			return new BoomEvent();
 		}
 		else {
 			if (this.board[position].isDug == true) {
-				return new SuccessfullDigEvent("Already Dug!");	//TODO should have an event for that
+				return new AlreadyDugEvent();	//TODO should have an event for that
 			}
 			else {
 				this.board[position].isDug = true;
 				this.numberOfDugCells++;
 				if (this.numberOfDugCells == this.size - this.numberOfBombs) {
-					return new AllDugEvent("Congratulations ! You found all cells without a bomb.");
+					return new AllDugEvent();
 				}
 				else {
-					return new SuccessfullDigEvent("Dug!");	
+					return new DugEvent();	
 				}
 			}		
 		}
