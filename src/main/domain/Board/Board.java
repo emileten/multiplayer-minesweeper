@@ -1,10 +1,13 @@
 package main.domain.Board;
 
+
 import main.domain.Events.*;
 
 /** Represents the board of a minesweeper game.
  * The board of a minesweeper game is made up of an integer indexed collection of BoardCell objects. 
  * Players can alter one of the three properties of these cells through the board object. 
+ * The indexes are one dimensional but the visualization is meant to be 2D (matrix), in which case 
+ * the 1D index is spread column wise.  
  * */
 public interface Board {
 	
@@ -47,4 +50,9 @@ public interface Board {
 	 */
 	int getSize();
 	
+	/**
+	 * @return string representation of the board
+	 */
+	String toString();
+
 }

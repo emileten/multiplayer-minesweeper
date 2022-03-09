@@ -56,7 +56,8 @@ public class Game {
 	public Event play(Player player, String action) {
 		if (this.started == false) {
 			return new GameNotStartedEvent();
-		} else {
+		} else { //TODO add an if that checks if the player is somewhere in the queue and if not throw a 
+			// no such player in game event.
 			return handleGameAction(player, action);
 		}
 	}
@@ -108,7 +109,6 @@ public class Game {
 	}
 	
 	
-	//TODO fix the mess you created copy pasting the handling code for observing actions 
 	
 	/**
 	 * Handle an observation action, assuming it matches the protocol given in getProtocolObservationAction. 
@@ -119,20 +119,21 @@ public class Game {
 		String[] tokens = action.split(" ");
 	    if (tokens[0].equals("look")) {
 	    	//look
-	    	return new NotSupportedPlayerActionEvent(); //TODO
+	    	return new NotSupportedPlayerActionEvent(); //TODO return a BoardRepresentationEvent or sth like that 
+	    	// with String rep of board.
 	    } else if (tokens[0].equals("help")) {
 	    	//help
-	    	return new NotSupportedPlayerActionEvent(); //TODO
+	    	return new NotSupportedPlayerActionEvent(); //TODO return nice string formatting of possible user input.
 	    } else {
 	    	//bye
-	    	return new NotSupportedPlayerActionEvent(); //TODO
+	    	return new NotSupportedPlayerActionEvent(); //TODO message that informs the player was removed from the game
 	    } 
 					
 	}
 	
 	/**
 	 * @return a regex String representing the set of symbols identifying observation actions //TODO consider making
-	 * this a constant variable
+	 * this a constant variable OR have this in a separate class because you'll also need a pretty formatting of it.
 	 */
 	public static String getProtocolObservationAction() {
 		return "(look)|(help)|(bye)|";
