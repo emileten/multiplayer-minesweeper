@@ -71,13 +71,23 @@ public class ArrayBoard implements Board {
 	}
 
 	@Override
-	public void flag(int position) {
-		this.board[position].isFlagged = true;
+	public Event flag(int position) {
+		if (this.board[position].isFlagged == true) {
+			return new AlreadyFlaggedEvent();
+		} else {
+			this.board[position].isFlagged = true;
+			return new FlaggedEvent();
+		}
 	}
 
 	@Override
-	public void deflag(int position) {
-		this.board[position].isFlagged = false;
+	public Event deflag(int position) {
+		if (this.board[position].isFlagged == false) {
+			return new AlreadyNotFlaggedEvent();
+		} else {
+			this.board[position].isFlagged = false;
+			return new DeflaggedEvent();
+		}
 	}
 	
 	@Override

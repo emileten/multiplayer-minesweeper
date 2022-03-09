@@ -8,16 +8,13 @@ import main.domain.Players.BoundedPlayersQueue;
 import main.domain.Players.ConcurrentBoundedPlayersQueue;
 import main.domain.Players.Player;
 import java.util.*;
-import java.util.stream.IntStream;
-
-import org.hamcrest.core.Is;
 
 public class Game {
 
 	public BoundedPlayersQueue players;
 	public Board board;
 	private boolean started = false;
-	private boolean ended = false; //TODO make use of that 
+	//TODO an 'ended' field ?
 	
 	/**
 	 * constructor, does nothing for now
@@ -32,10 +29,10 @@ public class Game {
 	 * @param size
 	 * randomly fills the board with bombs
 	 */
-	public Event startGame(Player player, int size, int numberOfPlayers) {
+	public Event startGame(Player player, int size, int numberOfRows, int numberOfColumns, int numberOfPlayers) {
 		Random rand = new Random();
 		int[] bombsLocations = rand.ints(0, size-1).toArray();
-		this.board = new ArrayBoard(size, bombsLocations);
+		this.board = new ArrayBoard(numberOfRows, numberOfColumns, bombsLocations);
 		BoundedPlayersQueue playersQueue = new ConcurrentBoundedPlayersQueue(numberOfPlayers);
 		try {
 			playersQueue.addPlayer(player);
@@ -56,8 +53,9 @@ public class Game {
 	public Event play(Player player, String action) {
 		if (this.started == false) {
 			return new GameNotStartedEvent();
-		} else { //TODO add an if that checks if the player is somewhere in the queue and if not throw a 
-			// no such player in game event.
+		} else if (!this.players.hasPlayer(player)){
+			return new NoSuchPlayerInGameEvent();
+		} else {
 			return handleGameAction(player, action);
 		}
 	}
@@ -68,10 +66,11 @@ public class Game {
 	 * @return the event associated with the player's action
 	 */
 	public Event handleGameAction(Player player, String action) {
-		if (action.matches(getProtocolModificationAction())) {
+		
+		if (action.matches(GameProtocol.getRegexProtocolModificationAction())) {
 			return handleGameModificationAction(player, action);
-		} else if (action.matches(getProtocolObservationAction())) {
-			return handleGameObservationAction(action);
+		} else if (action.matches(GameProtocol.getRegexProtocolObservationAction())) {
+			return handleGameObservationAction(player, action);
 		} else {
 			return new NotSupportedPlayerActionEvent();
 		}
@@ -91,12 +90,13 @@ public class Game {
 				String[] tokens = action.split(" ");
 		    	int x = Integer.parseInt(tokens[1]);
 		        int y = Integer.parseInt(tokens[2]);
+		        int position = x*y;
 		        if (tokens[0].equals("dig")) {
-			    	return new NotSupportedPlayerActionEvent(); //TODO
+		        	return this.board.dig(position);
 		        } else if (tokens[0].equals("flag")) {
-			    	return new NotSupportedPlayerActionEvent(); //TODO
+		        	return this.board.flag(position);
 		        } else {
-			    	return new NotSupportedPlayerActionEvent(); //TODO
+		        	return this.board.deflag(position);
 		        }
 			}
 			else {
@@ -114,38 +114,18 @@ public class Game {
 	 * Handle an observation action, assuming it matches the protocol given in getProtocolObservationAction. 
 	 * @param action
 	 */
-	private Event handleGameObservationAction(String action) {
+	private Event handleGameObservationAction(Player player, String action) {
 	
 		String[] tokens = action.split(" ");
 	    if (tokens[0].equals("look")) {
-	    	//look
-	    	return new NotSupportedPlayerActionEvent(); //TODO return a BoardRepresentationEvent or sth like that 
-	    	// with String rep of board.
+	    	return new LookBoardEvent(this.board);
 	    } else if (tokens[0].equals("help")) {
-	    	//help
-	    	return new NotSupportedPlayerActionEvent(); //TODO return nice string formatting of possible user input.
+	    	return new HelpEvent();
 	    } else {
-	    	//bye
-	    	return new NotSupportedPlayerActionEvent(); //TODO message that informs the player was removed from the game
+	    	this.players.removePlayer(player);
+	    	return new ByeEvent(player);
 	    } 
 					
 	}
-	
-	/**
-	 * @return a regex String representing the set of symbols identifying observation actions //TODO consider making
-	 * this a constant variable OR have this in a separate class because you'll also need a pretty formatting of it.
-	 */
-	public static String getProtocolObservationAction() {
-		return "(look)|(help)|(bye)|";
-	}
-	
-	/**
-	 * @return a regex String representing the set of symbols identifying modification actions. //TODO consider making 
-	 * this a constant variable. 
-	 */
-	public static String getProtocolModificationAction() {
-		return "(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|(deflag -?\\d+ -?\\d+)";
-	}
-	
 
 }

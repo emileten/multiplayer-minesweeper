@@ -21,13 +21,13 @@ public interface Board {
 	 * does nothing if it's already assigned to that location, or if it's already dug. 
 	 * @param position
 	 */
-	void flag(int position);
+	Event flag(int position);
 
 	/** attempts to turn off the 'flagged' property of a location
 	 * does nothing if it's already non-flagged, or dug. 
 	 * @param position
 	 */
-	void deflag(int position);
+	Event deflag(int position);
 	
 	/**
 	 * 

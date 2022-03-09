@@ -30,5 +30,7 @@ class EventTest {
 	void testDugEvent() {
 		Event myEvent = new DugEvent();
 	}
+	
+	// TODO add tests  for all the new events
 
 }

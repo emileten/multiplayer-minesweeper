@@ -22,5 +22,10 @@ public class StringPlayer implements Player {
 	public int hashCode() {
 		return this.getID().hashCode();
 	}
+	
+	@Override
+	public String toString() {
+		return this.getID();
+	}
 
 }

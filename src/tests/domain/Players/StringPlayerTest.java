@@ -31,4 +31,5 @@ class StringPlayerTest {
 
 	}
 
+	//TODO test toString()
 }

@@ -64,6 +64,7 @@ class ArrayBoardTest {
 	
 	@Test
 	void flagTest() {
+		// TODO you changed the spec, now it's returning an event. Check this. 
 		ArrayBoard testBoard = ArrayBoard.smallFactoryBoard();
 		testBoard.flag(0);
 		assertTrue(testBoard.isFlagged(0));		
@@ -71,10 +72,14 @@ class ArrayBoardTest {
 	
 	@Test
 	void deflagTest() {
+		// TODO you changed the spec, now it's returning an event. Check this. 
 		ArrayBoard testBoard = ArrayBoard.smallFactoryBoard();
 		testBoard.flag(0);
 		testBoard.deflag(0);
 		assertFalse(testBoard.isFlagged(0));
 	}
+	
+	// TODO you added new methods to ArrayBoard, test those ! 
+	
 
 }
