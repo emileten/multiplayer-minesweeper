@@ -4,17 +4,26 @@ import main.domain.Board.*;
 import main.domain.Events.*;
 import main.domain.Exceptions.MaxNumOfPlayersReachedException;
 import main.domain.Exceptions.NoPlayersInGameException;
+import main.domain.Exceptions.NoSuchPlayerInGameException;
 import main.domain.Players.BoundedPlayersQueue;
 import main.domain.Players.ConcurrentBoundedPlayersQueue;
 import main.domain.Players.Player;
+
 import java.util.*;
+
+
+//TODO check you have fixed the general pattern of having exceptions 
+// in the low level -- or events if it's not about a problem -- that must be caught 
+// at the high level, handled properly and then caught at the high level. 
+// so make sure low level problems are handled with checked exceptions. 
+// the benefit of checked exceptions is that higher level code mechanically has to
+// deal with such problems. 
 
 public class Game {
 
 	public BoundedPlayersQueue players;
 	public Board board;
 	private boolean started = false;
-	//TODO an 'ended' field ?
 	
 	/**
 	 * constructor, does nothing for now
@@ -23,15 +32,20 @@ public class Game {
 		
 	}
 	
+
 	/**
-	 * initiates a player queue and a board
+	 * initiates data : a player queue and a board, except if the game is already going on, as indicated by the 
+	 * started field.
 	 * @param player 
 	 * @param size
-	 * randomly fills the board with bombs
+	 * @param numberOfRows
+	 * @param numberOfColumns
+	 * @param bombsLocations
 	 */
-	public Event startGame(Player player, int size, int numberOfRows, int numberOfColumns, int numberOfPlayers) {
-		Random rand = new Random();
-		int[] bombsLocations = rand.ints(0, size-1).toArray();
+	public Event startGame(Player player, int numberOfRows, int numberOfColumns, int numberOfPlayers, List<Integer> bombsLocations) {
+		if (this.started == true) {
+			return new GameAlreadyStartedEvent();
+		}
 		this.board = new ArrayBoard(numberOfRows, numberOfColumns, bombsLocations);
 		BoundedPlayersQueue playersQueue = new ConcurrentBoundedPlayersQueue(numberOfPlayers);
 		try {
@@ -44,6 +58,42 @@ public class Game {
 		return new GameStartedEvent();
 	}
 	
+	
+	/**
+	 * @param player. Player joining the game. 
+	 * @return a PlayerAddedEvent if successful, a MaxNumberOfPlayersReachedEvent 
+	 * if the game is already at capacity.
+	 */
+	public Event joinGame(Player player) {
+		try {
+			this.players.addPlayer(player);
+			return new PlayerAddedEvent();
+		} catch (MaxNumOfPlayersReachedException e) {
+			return new MaxNumberOfPlayersReachedEvent();
+		}
+	}
+	
+	/**
+	 * @param player. Player leaving the game. 
+	 * @return a PlayerRemovedEvent or a NoSuchPlayerInGameEvent if the player specified is not 
+	 * playing at the moment. 
+	 */
+	public Event quitGame(Player player) {
+		try {
+			this.players.removePlayer(player);
+			return new PlayerRemovedEvent();
+		} catch (NoSuchPlayerInGameException e) {
+			return new NoSuchPlayerInGameEvent();
+		}
+	}
+	
+	/**
+	 * @return true if started
+	 */
+	public boolean hasStarted() {
+		boolean isStarted = this.started;
+		return isStarted;
+	}
 	/**
 	 * 
 	 * @param player
@@ -122,10 +172,31 @@ public class Game {
 	    } else if (tokens[0].equals("help")) {
 	    	return new HelpEvent();
 	    } else {
-	    	this.players.removePlayer(player);
-	    	return new ByeEvent(player);
+	    	return this.quitGame(player);
 	    } 
 					
 	}
+	
+
+	
+	/**
+	 * Provides a random 1D array of integers
+	 * @param numberOfBombs
+	 * @param boardSize
+	 * @return a 1D array of length equal to numberOfBombs and filled with integers randomly drawn from the interval
+	 * [0, boardSize-1]
+	 */
+	public static List<Integer> randomBombLocations(int numberOfBombs, int boardSize){
+	    ArrayList<Integer> list = new ArrayList<Integer>(numberOfBombs);
+	    Random random = new Random();
+	    
+	    for (int i = 0; i < numberOfBombs; i++)
+	    {
+	        list.add(random.nextInt(boardSize));
+	    }
+	    
+	    return list;
+	}  
+	
 
 }

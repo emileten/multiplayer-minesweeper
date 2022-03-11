@@ -2,8 +2,6 @@ package tests.domain.Board;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
 
 import main.domain.Events.*;
@@ -54,7 +52,7 @@ class ArrayBoardTest {
 		Event lastDigEvent = new DugEvent();
 		// digging all the locations that do not have a bomb. 
 		for (int i = 0; i < testBoard.getSize(); i++) {
-			if (Arrays.binarySearch(ArrayBoard.smallFactoryBoardBombsLocation(), i) < 0) {
+			if (!(ArrayBoard.smallFactoryBoardBombsLocation().contains(i))) {
 				lastDigEvent = testBoard.dig(i);				
 			}
 		}

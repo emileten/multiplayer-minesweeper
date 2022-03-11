@@ -110,8 +110,7 @@ class ConcurrentBoundedPlayersQueueTest {
 			testqueue.addPlayer(testplayer);
 		});
 
-		assertEquals("The maximum number of player : " + testqueue.getMaximumCapacity()
-				+ " is reached, cannot add a new player", thrown.getMessage());
+		assertEquals(("number of players is already " + String.valueOf(testqueue.getNumberOfPlayers()) + " and the maximum is " + String.valueOf(testqueue.getMaximumCapacity())), thrown.getMessage());
 
 	}
 
@@ -137,7 +136,7 @@ class ConcurrentBoundedPlayersQueueTest {
 	}
 
 	@Test
-	void testRemovePlayer() throws MaxNumOfPlayersReachedException {
+	void testRemovePlayer() throws NoSuchPlayerInGameException, MaxNumOfPlayersReachedException {
 		// should be able to remove a player that's in a queue, but not a player that's
 		// not in it
 		ConcurrentBoundedPlayersQueue testqueue = new ConcurrentBoundedPlayersQueue(2);
@@ -168,7 +167,11 @@ class ConcurrentBoundedPlayersQueueTest {
 		for (int i = 0; i < numberOfThreads; i++) {
 	    	final int local_i = i; // needs to be final for the lambdas
 	    	executor.execute(() -> {
-		    	testqueue.removePlayer(new StringPlayer("player " + String.valueOf(local_i)));					
+	    		try {
+			    	testqueue.removePlayer(new StringPlayer("player " + String.valueOf(local_i)));										
+				} catch (NoSuchPlayerInGameException e) {
+					System.out.println("Passing caught exception : " + e.getMessage());
+				}
 	    		latch.countDown();
 	    	});
 	    }

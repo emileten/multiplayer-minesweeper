@@ -1,8 +1,9 @@
 package main.domain.Players;
 
 
-import java.util.NoSuchElementException;
 import java.util.concurrent.*;
+
+import main.domain.Events.*;
 import main.domain.Exceptions.*;
 
 
@@ -48,21 +49,23 @@ public class ConcurrentBoundedPlayersQueue implements BoundedPlayersQueue {
 	}
 	
 	@Override
-	public synchronized void addPlayer(Player player) throws MaxNumOfPlayersReachedException {
+	public synchronized Event addPlayer(Player player) throws MaxNumOfPlayersReachedException {
 		if (player_queue.size() >= getMaximumCapacity()){
-			throw new MaxNumOfPlayersReachedException("The maximum number of player : " + getMaximumCapacity() + " is reached, cannot add a new player");
+			throw new MaxNumOfPlayersReachedException("number of players is already " + String.valueOf(player_queue.size()) + " and the maximum is " + String.valueOf(this.getMaximumCapacity()));
 		}
 		player_queue.addLast(player);
+		return new PlayerAddedEvent();
 	}
 	
 	@Override
-	public synchronized void removePlayer(Player player) throws NoSuchElementException {
+	public synchronized Event removePlayer(Player player) throws NoSuchPlayerInGameException {
 				
 		if (this.hasPlayer(player)) {
 			player_queue.remove(player);
+			return new PlayerRemovedEvent();
 		}
 		else {
-			throw new NoSuchElementException("Player " + player.getID() + " not found in queue");
+			throw new NoSuchPlayerInGameException("Player not found in game");
 		}
 	}
 	
