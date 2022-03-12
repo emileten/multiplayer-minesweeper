@@ -13,9 +13,7 @@ import main.domain.Board.*;
 
 class ArrayBoardTest {
 
-	// TODO equals() after the underlying BoardCell equals() test passes. 
-	// And toString(). 
-	
+
 	ArrayBoard testBoard;
 	
 	//TODO this method is used only here, consider removing the smallfactoryboard from arrayboard 
@@ -83,7 +81,6 @@ class ArrayBoardTest {
 		assertTrue(testBoard.flag(0) instanceof AlreadyFlaggedEvent);
 	}
 	
-	// TODO you added new methods to ArrayBoard, test those ! 
 	
 	@Test
 	void testEquals() {
@@ -121,5 +118,7 @@ class ArrayBoardTest {
 		assertEquals(Arrays.asList(6, 7, 8, 11, 13, 16, 17, 18),testBoard.neighBoringCells(12));
 		assertEquals(Arrays.asList(18, 19, 23), testBoard.neighBoringCells(24));
 	}
+	
+	//TODO test bombs locations 
 
 }

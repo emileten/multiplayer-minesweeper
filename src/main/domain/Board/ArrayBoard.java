@@ -126,6 +126,7 @@ public class ArrayBoard implements Board {
 	}
 	
 	/**
+	 * TODO the fact that the matrix is filled row wise should be centrally documented. 
 	 * finds the cells adjacent to a given cell in a row wise matrix representation of the board of cells. 
 	 * @param position. Position of the cell of which to find the neighbors in the array.
 	 * @return the indices of the cells adjacent to that cell per the row wise matrix representation.

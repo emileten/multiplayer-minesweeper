@@ -49,6 +49,7 @@ public class ConcurrentBoundedPlayersQueue implements BoundedPlayersQueue {
 	}
 	
 	@Override
+	// TODO the exception is I think useless
 	public synchronized Event addPlayer(Player player) throws MaxNumOfPlayersReachedException {
 		if (player_queue.size() >= getMaximumCapacity()){
 			throw new MaxNumOfPlayersReachedException("number of players is already " + String.valueOf(player_queue.size()) + " and the maximum is " + String.valueOf(this.getMaximumCapacity()));

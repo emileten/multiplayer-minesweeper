@@ -16,6 +16,7 @@ public class Game {
 	public BoundedPlayersQueue players;
 	public Board board;
 	private boolean started = false;
+	private boolean ended = false;
 	
 	/**
 	 * constructor, does nothing for now
@@ -29,16 +30,21 @@ public class Game {
 	 * initiates data : a player queue and a board, except if the game is already going on, as indicated by the 
 	 * started field.
 	 * @param player 
-	 * @param size
 	 * @param numberOfRows
 	 * @param numberOfColumns
+	 * @param numberOfPlayers
 	 * @param bombsLocations
 	 * 
-	 * @return GameAlreadyStartedEvent, MaxNumberOfPlayersReachedEvent, GameStartedEvent
+	 * @return GameAlreadyStartedEvent if this.started is true and doesn't touch the fields.
+	 * MaxNumberofPlayersReachedEvent if numberOfPlayers is below 1, and doesn't touch the fields.  
+	 * otherwise the game starts and it returns GameStartedEvent. 
 	 */
 	public Event startGame(Player player, int numberOfRows, int numberOfColumns, int numberOfPlayers, List<Integer> bombsLocations) {
 		if (this.started == true) {
 			return new GameAlreadyStartedEvent();
+		}
+		if (numberOfPlayers < 1) {
+			return new MaxNumberOfPlayersReachedEvent();
 		}
 		this.board = new ArrayBoard(numberOfRows, numberOfColumns, bombsLocations);
 		BoundedPlayersQueue playersQueue = new ConcurrentBoundedPlayersQueue(numberOfPlayers);
@@ -55,7 +61,7 @@ public class Game {
 	
 	/**
 	 * @param player. Player joining the game. 
-	 * @return PlayerAddedEvent, MaxNumberOfPlayersReachedEvent 
+	 * @return PlayerAddedEvent if added successfully, MaxNumberOfPlayersReachedEvent if game is at capacity. 
 	 */
 	public Event joinGame(Player player) {
 		try {
@@ -68,11 +74,17 @@ public class Game {
 	
 	/**
 	 * @param player. Player leaving the game. 
-	 * @return PlayerRemovedEvent, NoSuchPlayerInGameEvent
+	 * @return NoSuchPlayerInGameEvent if the player isn't in the game
+	 * NoPlayerInGameEvent if removal happened successfully and it was the last player
+	 * PlayerRemovedEvent otherwise.
 	 */
 	public Event quitGame(Player player) {
 		try {
 			this.players.removePlayer(player);
+			if (this.players.getNumberOfPlayers()==0) {
+				this.ended = true;
+				return new NoPlayerInGameEvent();
+			}
 			return new PlayerRemovedEvent();
 		} catch (NoSuchPlayerInGameException e) {
 			return new NoSuchPlayerInGameEvent();
@@ -80,17 +92,30 @@ public class Game {
 	}
 	
 	/**
-	 * @return true if started
+	 * @return true if this.started is true. 
 	 */
 	public boolean hasStarted() {
 		boolean isStarted = this.started;
 		return isStarted;
 	}
+	
+	/**
+	 * @return true if this.ended is true. 
+	 */
+	public boolean hasEnded() {
+		boolean isEnded = this.ended;
+		return isEnded;
+	}
+	
 	/**
 	 * 
 	 * @param player
 	 * @param action
-	 * @return GameNotStartedEvent, NoSuchPlayerInGameEvent, or Event returned by handleGameAction(). 
+	 * @return GameNotStartedEvent if game hasn't started yet and can't play
+	 * NoSuchPlayerInGameEvent if the player specified isn't in the game
+	 * Otherwise the Event associated with the action.
+	 * If it's an AllDugEvent or a BoomEvent, this method ends the game by turning on
+	 * this.ended. 
 	 */
 	public Event play(Player player, String action) {
 		if (this.started == false) {
@@ -98,14 +123,19 @@ public class Game {
 		} else if (!this.players.hasPlayer(player)){
 			return new NoSuchPlayerInGameEvent();
 		} else {
-			return handleGameAction(player, action);
+			Event playResultEvent = handleGameAction(player, action);
+			if (playResultEvent instanceof AllDugEvent | playResultEvent instanceof BoomEvent) {
+				this.ended = true;
+			}
+			return playResultEvent;
 		}
 	}
 	
 	/**
 	 * @param player
 	 * @param action
-	 * @return NotSupportedPlayerActionEvent, or Event returned by handleGameModificationAction() or handleGameObservationAction(). 
+	 * @return NotSupportedPlayerActionEvent if the action string isn't understandable
+	 * otherwise the event associated with the action. 
 	 */
 	public Event handleGameAction(Player player, String action) {
 		
@@ -122,7 +152,9 @@ public class Game {
 	 * Handle a modification action, assuming it matches the protocol given in getProtocolModificationAction.
 	 * @param player 
 	 * @param action
-	 * @return NotThisPlayerTurnEvent, NoPlayerInGameEvent, or other Event. TODO. 
+	 * @return NotThisPlayerTurnEvent if it's not the turn of this player at the moment
+	 * NoPlayerInGameEvent if there isn't any player in the game
+	 * Otherwise the event associated with the action.
 	 */
 	private Event handleGameModificationAction(Player player, String action) {
 		try {
@@ -153,9 +185,11 @@ public class Game {
 	
 	/**
 	 * Handle an observation action, assuming it matches the protocol given in getProtocolObservationAction. 
-	 * @param action
+	 * @param action, one of look, help or bye. 
 	 * @param player
-	 * @return LookBoardEvent, HelpEvent
+	 * @return LookBoardEvent if it's a look-at-the-board action
+	 * HelpEvent if the player seeks for help
+	 * and if it's bye, the event associated with that action. 
 	 */
 	private Event handleGameObservationAction(Player player, String action) {
 	
@@ -164,7 +198,7 @@ public class Game {
 	    	return new LookBoardEvent(this.board);
 	    } else if (tokens[0].equals("help")) {
 	    	return new HelpEvent();
-	    } else {
+	    } else { // bye
 	    	return this.quitGame(player);
 	    } 
 					
