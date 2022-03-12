@@ -63,5 +63,14 @@ public interface Board {
 	 * @return a hash code value for this board
 	 */
 	int hashCode();
+	
+	/*
+	 * Input not using zero indexing. 
+	 * @param x row, strictly above 0
+	 * @param y column, strictly above 0
+	 * @return index in the (zero-indexed) 1D array, i.e :
+	 * (numberOfColumns * x) - (numberOfColumns - y) - 1
+	 */
+	int convertMatrixIndices(int x, int y);
 
 }

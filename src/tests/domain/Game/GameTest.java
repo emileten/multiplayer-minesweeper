@@ -2,6 +2,9 @@ package tests.domain.Game;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -11,16 +14,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import main.domain.Game.Game;
+import main.domain.Game.GameProtocol;
 import main.domain.Board.*;
 import main.domain.Events.AllDugEvent;
 import main.domain.Events.BoomEvent;
+import main.domain.Events.DeflaggedEvent;
 import main.domain.Events.DugEvent;
 import main.domain.Events.Event;
+import main.domain.Events.FlaggedEvent;
 import main.domain.Events.GameAlreadyStartedEvent;
 import main.domain.Events.GameStartedEvent;
 import main.domain.Events.MaxNumberOfPlayersReachedEvent;
+import main.domain.Events.NoPlayerInGameEvent;
 import main.domain.Events.PlayerAddedEvent;
 import main.domain.Events.PlayerRemovedEvent;
+import main.domain.Events.UnSupportedPlayerActionEvent;
 import main.domain.Players.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -82,20 +90,78 @@ class GameTest {
 	void testQuitGame() {
 		Player p1 = new StringPlayer("newPlayerWhoCanJoin");
 		testGame.joinGame(p1);
-		assertTrue(testGame.quitGame(p1) instanceof PlayerRemovedEvent);	
+		assertTrue(testGame.quitGame(p1) instanceof PlayerRemovedEvent);
+		assertFalse(testGame.hasEnded());
+		assertTrue(testGame.quitGame(testPlayer) instanceof NoPlayerInGameEvent);
+		assertTrue(testGame.hasEnded());
+
 	}
-
-	/*
-	 * TODO
-	 * joinGame
-	 * quitGame
-	 * observingAction
-	 * mutatingAction
-	 * randomBombs
-	 */
 	
+	@Test
+	void testLook() {
+		Event resultEvent = testGame.play(testPlayer, "look");
+		assertTrue(resultEvent.toString().equals(testGame.board.toString()));
+	}
 	
+	@Test
+	void testHelp() {
+		Event resultEvent = testGame.play(testPlayer, "help");
+		assertTrue(resultEvent.toString().equals(GameProtocol.getHumanReadablePlayerProtocol()));		
+	}
+	
+	@Test
+	void testBye() {
+		Player p1 = new StringPlayer("newPlayerWhoCanJoin");
+		testGame.joinGame(p1);		
+		Event resultEvent = testGame.play(testPlayer, "bye");
+		assertTrue(resultEvent instanceof PlayerRemovedEvent);
+		Event resultEvent2 = testGame.play(p1, "bye");
+		assertTrue(resultEvent2 instanceof NoPlayerInGameEvent);
+		assertTrue(testGame.hasEnded());		
+	}
+	
+	@Test
+	void testPlayTurn() {
+		
+		assertTrue(testGame.play(testPlayer, "DRUNK MAN TRYING TO PLAY") instanceof UnSupportedPlayerActionEvent);
+		assertTrue(testGame.play(testPlayer, "dig 1 1") instanceof DugEvent);
+		assertTrue(testGame.board.isDug(0));
+		assertTrue(testGame.play(testPlayer, "dig 3 4") instanceof DugEvent);
+		assertTrue(testGame.board.isDug(13));
+		assertTrue(testGame.play(testPlayer, "flag 2 5") instanceof FlaggedEvent);
+		assertTrue(testGame.board.isFlagged(9));
+		assertTrue(testGame.play(testPlayer, "deflag 2 5") instanceof DeflaggedEvent);
+		assertFalse(testGame.board.isFlagged(9));
 
+	}
+	
+	@Test
+	void testPlayTurnBoomEndsGame() {
+		
+		assertTrue(testGame.play(testPlayer, "dig 2 5") instanceof BoomEvent);
+		assertTrue(testGame.hasEnded());
+
+	}
+	
+	@Test
+	void testPlayTurnAllDugEndsGame() {
+		
+		testGame = new Game();
+	    bombLocations = ArrayBoard.smallFactoryBoardBombsLocation();
+		testGame.startGame(testPlayer, 1, 2, 1, Arrays.asList());
+		testGame.play(testPlayer, "dig 1 1");
+		assertTrue(testGame.play(testPlayer, "dig 1 2") instanceof AllDugEvent);
+		assertTrue(testGame.hasEnded());
+		
+	}
+	
+	@Test
+	void testRandomBombs() {
+		List<Integer> randomBombIntegers = Game.randomBombLocations(10, 20);
+		assertTrue(randomBombIntegers.size() == 10);
+		Collections.sort(randomBombIntegers);
+		assertTrue(randomBombIntegers.get(0) >= 0 && randomBombIntegers.get(randomBombIntegers.size()-1) <= 19);
+	}
 	
 	
 }

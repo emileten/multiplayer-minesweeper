@@ -144,7 +144,7 @@ public class Game {
 		} else if (action.matches(GameProtocol.getRegexProtocolObservationAction())) {
 			return handleGameObservationAction(player, action);
 		} else {
-			return new NotSupportedPlayerActionEvent();
+			return new UnSupportedPlayerActionEvent();
 		}
 	}
 	
@@ -163,7 +163,7 @@ public class Game {
 				String[] tokens = action.split(" ");
 		    	int x = Integer.parseInt(tokens[1]);
 		        int y = Integer.parseInt(tokens[2]);
-		        int position = x*y;
+		        int position = this.board.convertMatrixIndices(x, y);
 		        if (tokens[0].equals("dig")) {
 		        	return this.board.dig(position);
 		        } else if (tokens[0].equals("flag")) {

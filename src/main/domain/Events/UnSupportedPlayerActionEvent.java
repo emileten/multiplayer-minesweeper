@@ -1,6 +1,6 @@
 package main.domain.Events;
 
-public class NotSupportedPlayerActionEvent implements Event {
+public class UnSupportedPlayerActionEvent implements Event {
 
 	private final String message = "Unknown action";
 	

@@ -126,7 +126,10 @@ public class ArrayBoard implements Board {
 	}
 	
 	/**
-	 * TODO the fact that the matrix is filled row wise should be centrally documented. 
+	 * TODO the fact that the matrix is filled row wise should be centrally documented.
+	 * Also, since it's key in the game that the viz is a matrix, and in the Board interface 
+	 * a 1D array is contract, you probably want these conversino methods to be in the interface. 
+	 * 
 	 * finds the cells adjacent to a given cell in a row wise matrix representation of the board of cells. 
 	 * @param position. Position of the cell of which to find the neighbors in the array.
 	 * @return the indices of the cells adjacent to that cell per the row wise matrix representation.
@@ -187,6 +190,10 @@ public class ArrayBoard implements Board {
 		potentialNeighbors.removeIf(value -> value < 0 | value >= this.size);
 				
 		return potentialNeighbors;
+	}
+	
+	public int convertMatrixIndices(int x, int y) {
+		return (this.numberOfColumns * x) - (this.numberOfColumns - y) - 1;
 	}
 	
 	/**

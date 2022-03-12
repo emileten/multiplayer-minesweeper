@@ -6,7 +6,7 @@ public class GameProtocol {
 	/**
 	 * @return human friendly explanations of the protocol
 	 */
-	public static String getHumanReadableProtocol() {
+	public static String getHumanReadablePlayerProtocol() {
 		return "Messages not modifying the game : <look> <help> <bye> Messages modifying the game : <dig X Y> <flag X Y> <deflag X Y>";
 	}
 	

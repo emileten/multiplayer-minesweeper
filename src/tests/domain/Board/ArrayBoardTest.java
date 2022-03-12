@@ -119,6 +119,14 @@ class ArrayBoardTest {
 		assertEquals(Arrays.asList(18, 19, 23), testBoard.neighBoringCells(24));
 	}
 	
+	@Test
+	void testConvertMatrixIndices() {
+		assertEquals(24, testBoard.convertMatrixIndices(5, 5));
+		assertEquals(0, testBoard.convertMatrixIndices(1, 1));
+		assertEquals(13, testBoard.convertMatrixIndices(3, 4));
+		assertEquals(16, testBoard.convertMatrixIndices(4, 2));
+	}
+	
 	//TODO test bombs locations 
 
 }
