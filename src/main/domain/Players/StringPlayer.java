@@ -13,6 +13,7 @@ public class StringPlayer implements Player {
 		return id;
 	}
 	
+	//TODO might want to fix this 'override'.... it's an abstract class in the interface...
 	@Override
 	public boolean equals(Object o) {
 		return this.hashCode() == o.hashCode();

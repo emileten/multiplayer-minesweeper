@@ -11,14 +11,6 @@ import main.domain.Players.Player;
 
 import java.util.*;
 
-
-//TODO check you have fixed the general pattern of having exceptions 
-// in the low level -- or events if it's not about a problem -- that must be caught 
-// at the high level, handled properly and then caught at the high level. 
-// so make sure low level problems are handled with checked exceptions. 
-// the benefit of checked exceptions is that higher level code mechanically has to
-// deal with such problems. 
-
 public class Game {
 
 	public BoundedPlayersQueue players;
@@ -41,6 +33,8 @@ public class Game {
 	 * @param numberOfRows
 	 * @param numberOfColumns
 	 * @param bombsLocations
+	 * 
+	 * @return GameAlreadyStartedEvent, MaxNumberOfPlayersReachedEvent, GameStartedEvent
 	 */
 	public Event startGame(Player player, int numberOfRows, int numberOfColumns, int numberOfPlayers, List<Integer> bombsLocations) {
 		if (this.started == true) {
@@ -61,8 +55,7 @@ public class Game {
 	
 	/**
 	 * @param player. Player joining the game. 
-	 * @return a PlayerAddedEvent if successful, a MaxNumberOfPlayersReachedEvent 
-	 * if the game is already at capacity.
+	 * @return PlayerAddedEvent, MaxNumberOfPlayersReachedEvent 
 	 */
 	public Event joinGame(Player player) {
 		try {
@@ -75,8 +68,7 @@ public class Game {
 	
 	/**
 	 * @param player. Player leaving the game. 
-	 * @return a PlayerRemovedEvent or a NoSuchPlayerInGameEvent if the player specified is not 
-	 * playing at the moment. 
+	 * @return PlayerRemovedEvent, NoSuchPlayerInGameEvent
 	 */
 	public Event quitGame(Player player) {
 		try {
@@ -98,7 +90,7 @@ public class Game {
 	 * 
 	 * @param player
 	 * @param action
-	 * @return the event associated with the player's action
+	 * @return GameNotStartedEvent, NoSuchPlayerInGameEvent, or Event returned by handleGameAction(). 
 	 */
 	public Event play(Player player, String action) {
 		if (this.started == false) {
@@ -113,7 +105,7 @@ public class Game {
 	/**
 	 * @param player
 	 * @param action
-	 * @return the event associated with the player's action
+	 * @return NotSupportedPlayerActionEvent, or Event returned by handleGameModificationAction() or handleGameObservationAction(). 
 	 */
 	public Event handleGameAction(Player player, String action) {
 		
@@ -130,8 +122,7 @@ public class Game {
 	 * Handle a modification action, assuming it matches the protocol given in getProtocolModificationAction.
 	 * @param player 
 	 * @param action
-	 * @return Event associated with the action or NotThisPlayerTurnEvent if according to the queue, 
-	 * it's not the turn of the given player. TODO list possible events. Or NotSupportedPlayerActionEvent.
+	 * @return NotThisPlayerTurnEvent, NoPlayerInGameEvent, or other Event. TODO. 
 	 */
 	private Event handleGameModificationAction(Player player, String action) {
 		try {
@@ -163,6 +154,8 @@ public class Game {
 	/**
 	 * Handle an observation action, assuming it matches the protocol given in getProtocolObservationAction. 
 	 * @param action
+	 * @param player
+	 * @return LookBoardEvent, HelpEvent
 	 */
 	private Event handleGameObservationAction(Player player, String action) {
 	

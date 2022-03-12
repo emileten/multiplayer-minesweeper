@@ -6,6 +6,7 @@ public interface Player {
 	/** @return the ID of this player */ 
 	Object getID();
 	
+	//TODO I don't think you need this
 	/**
 	 * @param other an object of the same type
 	 * @return True if this is equal to other*/
