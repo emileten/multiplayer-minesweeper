@@ -10,6 +10,8 @@ import java.util.concurrent.*;
 import main.domain.Players.*;
 import main.domain.Exceptions.*;
 
+//TODO make use of fixtures like in the other tests 
+
 class ConcurrentBoundedPlayersQueueTest {
 
 	@Test
@@ -219,5 +221,21 @@ class ConcurrentBoundedPlayersQueueTest {
 		assertEquals(testqueue.getNumberOfPlayers(), 2);
 
 	}
+	
+	@Test
+	void testToString() throws MaxNumOfPlayersReachedException, NoPlayersInGameException {
+		ConcurrentBoundedPlayersQueue testqueue = new ConcurrentBoundedPlayersQueue(2);
+		Player testplayer1 = new StringPlayer("testplayer1");
+		Player testplayer2 = new StringPlayer("testplayer2");	
+		testqueue.addPlayer(testplayer1);
+		testqueue.addPlayer(testplayer2);	
+		String expectedString = "testplayer1\ntestplayer2";
+		assertEquals(expectedString, testqueue.toString());
+		testqueue.nextPlayer();
+		String expectedString2 = "testplayer2\ntestplayer1";
+		assertEquals(expectedString2, testqueue.toString());
+		
+	}
+	
 
 }

@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -100,7 +98,12 @@ class GameTest {
 	@Test
 	void testLook() {
 		Event resultEvent = testGame.play(testPlayer, "look");
-		assertTrue(resultEvent.toString().equals(testGame.board.toString()));
+		String expectedString = testGame.board.toString() + 
+				"\n" +
+				"Players queue :" +
+				"\n" +
+				"testPlayer";
+		assertEquals(expectedString, resultEvent.toString());
 	}
 	
 	@Test

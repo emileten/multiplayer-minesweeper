@@ -1,6 +1,7 @@
 package main.domain.Players;
 
 
+import java.util.Iterator;
 import java.util.concurrent.*;
 
 import main.domain.Events.*;
@@ -97,6 +98,22 @@ public class ConcurrentBoundedPlayersQueue implements BoundedPlayersQueue {
 		return player_queue.size();
 	}
 	
+	
+	@Override
+	public String toString() {
+		String toShowString = "";
+		Iterator<Player> queueIterator = player_queue.iterator();
+		
+		while(queueIterator.hasNext()) {
+			toShowString = toShowString + queueIterator.next().toString();
+			if (queueIterator.hasNext()) {
+				toShowString = toShowString + "\n";
+			}
+			
+		}
+
+		return toShowString;
+	}
 	
 	
 

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import main.domain.Players.*;
 
+// TODO make use of fixtures 
+
 class StringPlayerTest {
 
 	@Test

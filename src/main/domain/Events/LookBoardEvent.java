@@ -1,13 +1,18 @@
 package main.domain.Events;
 
 import main.domain.Board.Board;
+import main.domain.Players.BoundedPlayersQueue;
 
 public class LookBoardEvent implements Event {
 
 	private final String message;
 	
-	public LookBoardEvent(Board board) {
-		this.message = board.toString();
+	public LookBoardEvent(Board board, BoundedPlayersQueue playersQueue) {
+		this.message = board.toString() +
+				"\n" + 
+				"Players queue :" +
+				"\n" +
+				playersQueue.toString();	
 	}
 	
 	public String toString() {

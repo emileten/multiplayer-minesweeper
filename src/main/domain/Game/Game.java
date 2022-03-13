@@ -114,14 +114,17 @@ public class Game {
 	 * @return GameNotStartedEvent if game hasn't started yet and can't play
 	 * NoSuchPlayerInGameEvent if the player specified isn't in the game
 	 * Otherwise the Event associated with the action.
-	 * If it's an AllDugEvent or a BoomEvent, this method ends the game by turning on
-	 * this.ended. 
+	 * 
+	 * If the event associated with the action is an AllDugEvent or a BoomEvent, this method ends the game by turning on the
+	 * this.ended field.
 	 */
 	public Event play(Player player, String action) {
-		if (this.started == false) {
+		if (this.hasStarted() == false) {
 			return new GameNotStartedEvent();
 		} else if (!this.players.hasPlayer(player)){
 			return new NoSuchPlayerInGameEvent();
+		} else if (this.hasEnded() == true){
+			return new GameAlreadyEndedEvent();
 		} else {
 			Event playResultEvent = handleGameAction(player, action);
 			if (playResultEvent instanceof AllDugEvent | playResultEvent instanceof BoomEvent) {
@@ -189,13 +192,13 @@ public class Game {
 	 * @param player
 	 * @return LookBoardEvent if it's a look-at-the-board action
 	 * HelpEvent if the player seeks for help
-	 * and if it's bye, the event associated with that action. 
+	 * and if it's bye, the event associated with the quiteGame method of this class. 
 	 */
 	private Event handleGameObservationAction(Player player, String action) {
 	
 		String[] tokens = action.split(" ");
 	    if (tokens[0].equals("look")) {
-	    	return new LookBoardEvent(this.board);
+	    	return new LookBoardEvent(this.board, this.players);
 	    } else if (tokens[0].equals("help")) {
 	    	return new HelpEvent();
 	    } else { // bye
@@ -223,7 +226,7 @@ public class Game {
 	    }
 	    
 	    return list;
-	}  
+	}
 	
 
 }

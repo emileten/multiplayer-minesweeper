@@ -93,7 +93,6 @@ class ArrayBoardTest {
 	
 	@Test
 	void testToString() {
-		System.out.println(testBoard.toString());
 		String sameLine = "- - - - -\n";
 		assertEquals(sameLine.repeat(5), testBoard.toString());
 		testBoard.dig(0);

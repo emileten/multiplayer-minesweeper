@@ -49,5 +49,10 @@ public interface BoundedPlayersQueue {
 	 * @return the number of players in this queue
 	 */
 	int getNumberOfPlayers();
+	
+	/**
+	 * @return string rep of this queue. 
+	 */
+	String toString();
 
 }
