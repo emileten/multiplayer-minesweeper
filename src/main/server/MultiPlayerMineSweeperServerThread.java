@@ -58,7 +58,6 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
 		return resultEvent.toString();
 	}
 	
-	
 	public void run() {
         try ( 
                 PrintWriter out =
@@ -106,10 +105,8 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
                           
                 
             } catch (IOException e) {
-                System.out.println("Exception caught when trying to handle request in thread" + 
-                Thread.currentThread().getName());
-                System.out.println(e.getMessage());
-            }
+            	e.printStackTrace();
+            } 
 		
 	}
 
