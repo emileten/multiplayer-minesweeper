@@ -31,24 +31,19 @@ public class MultiPlayerMineSweeperServer {
         serverSocket = new ServerSocket(port);
     }
 	
-	public void serve() {
-
-	
-		serverGame = new Game();
+    /* Instantiates a Game, and opens itself to client connections to handle them
+     * Never returns, unless an exception is thrown.
+     * 
+     * @throws IOException if the main server socket is broken. 
+     */
+	public void serve() throws IOException {
 		
-		try {
-	        while (true) {
-	            // this blocks until a client connects
-	        	Socket socket = serverSocket.accept();
-				Thread t = new Thread(new MultiPlayerMineSweeperServerThread(socket, serverGame));
-				t.start();	
-	        }			
-		} catch (IOException e) {
-			System.out.println("Exception caught when attempting to receive a request");
-			e.printStackTrace();
-		}
-
-        
+		serverGame = new Game();
+		while (true) { //means it's constantly serving, until I decide to turn it off.    	
+			Socket socket = serverSocket.accept(); // blocks until reception of connection attempt. Might throw IO Exception ! 			
+			Thread t = new Thread(new MultiPlayerMineSweeperServerThread(socket, serverGame)); //sending over to new thread	
+			t.start();							
+		}       
 	}
 	
 
@@ -69,12 +64,14 @@ public class MultiPlayerMineSweeperServer {
      * 
      * @param args arguments as described
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // Command-line argument parsing is provided. Do not change this method.
         boolean debug = false;
         int port = DEFAULT_PORT;
 
         Queue<String> arguments = new LinkedList<String>(Arrays.asList(args));
+        
+        // trying to parse args
         try {
             while ( ! arguments.isEmpty()) {
                 String flag = arguments.remove();
@@ -103,8 +100,15 @@ public class MultiPlayerMineSweeperServer {
             return;
         }
 
+        
+        // trying to run server
+        try {
+        	runMultiPlayerMineSweeperServer(debug, port);	
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
-        runMultiPlayerMineSweeperServer(debug, port);
+       
 
     }
 
@@ -115,16 +119,11 @@ public class MultiPlayerMineSweeperServer {
      * @param port The network port on which the server should listen, requires 0 <= port <= 65535.
      * @throws IOException if a network error occurs
      */
-    public static void runMultiPlayerMineSweeperServer(boolean debug, int port) {
-                
-    	try {
-        	MultiPlayerMineSweeperServer server = new MultiPlayerMineSweeperServer(port, debug);
-        	server.serve();
-		} catch (IOException e) {
-			System.out.println("Exception caught when attempting to serve");
-			e.printStackTrace();			
-		}
-        
+    public static void runMultiPlayerMineSweeperServer(boolean debug, int port) throws IOException {
+               
+        MultiPlayerMineSweeperServer server = new MultiPlayerMineSweeperServer(port, debug);
+        server.serve();
+     
     }
 	
 
