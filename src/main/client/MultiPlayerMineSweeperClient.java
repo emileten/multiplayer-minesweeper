@@ -3,7 +3,6 @@ package main.client;
 import java.io.*;
 import java.net.*;
 
-import main.domain.Events.*;
 import main.server.ServerProtocol;
 
 public class MultiPlayerMineSweeperClient {

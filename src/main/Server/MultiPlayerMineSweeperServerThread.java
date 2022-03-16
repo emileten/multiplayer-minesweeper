@@ -4,10 +4,16 @@ import java.net.*;
 import java.io.*;
 import java.util.List;
 
+//TODO 
+//there is a problem with 'enter' key messages from the user
+// I need those for, for example, the LOOK message... 
+// alternative solutions : 
+// (1) catch this in the protocol and server communication so that it doesn't use user messages as long as the look message is not finished 
+// (2) identify the value of the enter key and systematically catch it. 
+//problem with LOOK : I have to type several times enter to see the whole thing, and it considers this as messages.
 
 import main.domain.Game.*;
 import main.domain.Players.*;
-import main.domain.Events.*;
 
 public class MultiPlayerMineSweeperServerThread implements Runnable {
 
@@ -57,6 +63,7 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
     					numberOfColumns,
     					Integer.valueOf(tokenStrings[4]),
     					bombLocations).toString();
+    			this.stateString = "PLAYING";
     		} else {
     			theOutputString = ServerProtocol.getHumanReadableServerStartProtocol();
     		}
@@ -67,6 +74,7 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
 				String[] tokenStrings = input.split("//s+");
 				this.threadPlayer = new StringPlayer(tokenStrings[1]);
 				theOutputString = hostedGame.joinGame(this.threadPlayer).toString();
+				this.stateString = "PLAYING";
 			} else {
             	theOutputString = ServerProtocol.getHumanReadableServerJoinProtocol();
             }
