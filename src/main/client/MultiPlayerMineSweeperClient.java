@@ -3,8 +3,9 @@ package main.client;
 import java.io.*;
 import java.net.*;
 
-//TODO copy pasting the KK client doesn't work. Doesn't transmit properly your msg.
-// Also you have to type spaces, it's weird. 
+import main.domain.Events.*;
+import main.server.ServerProtocol;
+
 public class MultiPlayerMineSweeperClient {
 
     public static void main(String[] args) throws IOException {
@@ -33,7 +34,7 @@ public class MultiPlayerMineSweeperClient {
             // this waits indefinitely for the first message
             while((fromServer = in.readLine()) != null) { // infinite loop
             	System.out.println(fromServer);	
-            	if (fromServer.equals("Bye")) { // end signal 
+            	if (fromServer.matches(ServerProtocol.getRegexServerProtocolEndSignals())) { // end signal 
             		break;
             	}
             	fromClient = stdIn.readLine();

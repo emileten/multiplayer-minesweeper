@@ -7,6 +7,7 @@ import java.util.List;
 
 import main.domain.Game.*;
 import main.domain.Players.*;
+import main.domain.Events.*;
 
 public class MultiPlayerMineSweeperServerThread implements Runnable {
 
@@ -73,7 +74,7 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
 			if (input.matches(ServerProtocol.getRegexServerByeProtocol())) {
             	theOutputString = "Bye";
             } else {
-            	theOutputString = hostedGame.play(this.threadPlayer, input).toString();           
+            	theOutputString = hostedGame.play(this.threadPlayer, input).toString();        
             }
 		} 
 
@@ -104,7 +105,7 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
                 while((intputLineString = in.readLine()) != null) { // infinite per se
                 	outputLineString = this.handleRequest(intputLineString);
                 	out.println(outputLineString);
-                	if (outputLineString.equals("Bye.")){
+                	if (outputLineString.matches(ServerProtocol.getRegexServerProtocolEndSignals())){ 
                 		break;
                 	}
                 }

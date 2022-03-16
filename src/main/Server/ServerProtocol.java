@@ -1,5 +1,7 @@
 package main.server;
 
+import main.domain.Events.*;
+
 public class ServerProtocol {
 
 	public static String getHumanReadableServerJoinProtocol() {
@@ -21,6 +23,13 @@ public class ServerProtocol {
 	}
 		
 	public static String getRegexServerByeProtocol() {
-		return "(bye)";
+		return "(Bye)";
+	}
+	
+	public static String getRegexServerProtocolEndSignals() {
+		return "(" + getRegexServerByeProtocol() + ")"
+				+ "|(" + new AllDugEvent().toString() + ")"
+				+ "|(" + new BoomEvent().toString() + ")"
+				+ "|(" + new PlayerRemovedEvent().toString() + ")";
 	}
 }
