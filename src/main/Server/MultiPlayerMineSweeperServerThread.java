@@ -58,7 +58,7 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
     					Integer.valueOf(tokenStrings[4]),
     					bombLocations).toString();
     		} else {
-    			theOutputString = ServerProtocol.getRegexServerStartProtocol();
+    			theOutputString = ServerProtocol.getHumanReadableServerStartProtocol();
     		}
 		} else if (this.stateString.equals("OFFERED_JOIN")){ // here the conversation is going on 
 			if (input.matches(ServerProtocol.getRegexServerByeProtocol())) {
