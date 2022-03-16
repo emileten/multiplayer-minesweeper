@@ -36,7 +36,7 @@ public class MultiPlayerMineSweeperClient {
             	if (fromServer.equals("Bye")) { // end signal 
             		break;
             	}
-            	fromClient = in.readLine();
+            	fromClient = stdIn.readLine();
             	if (fromClient!=null) {
             		out.println(fromClient);         
             	}
