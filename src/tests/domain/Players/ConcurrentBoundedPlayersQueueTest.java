@@ -229,10 +229,10 @@ class ConcurrentBoundedPlayersQueueTest {
 		Player testplayer2 = new StringPlayer("testplayer2");	
 		testqueue.addPlayer(testplayer1);
 		testqueue.addPlayer(testplayer2);	
-		String expectedString = "testplayer1\ntestplayer2";
+		String expectedString = "testplayer1\\linetestplayer2";
 		assertEquals(expectedString, testqueue.toString());
 		testqueue.nextPlayer();
-		String expectedString2 = "testplayer2\ntestplayer1";
+		String expectedString2 = "testplayer2\\linetestplayer1";
 		assertEquals(expectedString2, testqueue.toString());
 		
 	}

@@ -81,7 +81,7 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
             	theOutputString = "bye";
             } else if(input.matches(ServerProtocol.getRegexServerJoinProtocol())) {
 				String[] tokenStrings = input.split("//s+");
-				this.threadPlayer = new StringPlayer(tokenStrings[1]);
+				this.threadPlayer = new StringPlayer(tokenStrings[0]);
 				theOutputString = hostedGame.joinGame(this.threadPlayer).toString();
 				this.stateString = "PLAYING";
 			} else {

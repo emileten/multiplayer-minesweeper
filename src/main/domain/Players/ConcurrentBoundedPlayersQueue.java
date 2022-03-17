@@ -107,7 +107,7 @@ public class ConcurrentBoundedPlayersQueue implements BoundedPlayersQueue {
 		while(queueIterator.hasNext()) {
 			toShowString = toShowString + queueIterator.next().toString();
 			if (queueIterator.hasNext()) {
-				toShowString = toShowString + "\n";
+				toShowString = toShowString + "\\line";
 			}
 			
 		}

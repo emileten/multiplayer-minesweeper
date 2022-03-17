@@ -24,7 +24,7 @@ class BoardCellTest {
 		boardCell.hasBomb = true;
 		assertTrue(boardCell.toString().equals("-"));		
 		boardCell.isDug = true;
-		assertTrue(boardCell.toString().equals(" "));
+		assertTrue(boardCell.toString().equals("*"));
 		boardCell.numberOfAdjacentBombs = 1;
 		assertTrue(boardCell.toString().equals("1"));
 		boardCell.isDug = false;

@@ -11,7 +11,19 @@ import main.domain.Players.Player;
 
 import java.util.*;
 
-//TODO might not need the 'ended' one .. start is sufficient. 
+/*
+ * TODO might not need the 'ended' one .. start is sufficient. 
+ * TODO the player queue is not properly updated
+ * TODO the game is not thread safe, while the board is. You want a mechanism to prevent essentially inconsistencies in the values of the 'end' and 'start' fields...
+ * One idea : any time you're doing this operation, separate this out in a synchronized method. 
+ * If someone tries to end something already ended, raise a flag. Same for started. 
+ * Warning : is it only about start and end ? Isn't there something else ? It all boils down to one shared object, the game. What are the modifiable fields ? Wihch are not yet thread safe ? 
+ * 
+ * Argument one : The board gets modified through an authorization from the player queue only, and the player queue is thread safe, so the board and the player queue are thread safe. 
+ * 
+ * Argument two : the start and end are not thread safe for now, but you can make them thread safe with the above mechanism. 
+ */
+
 public class Game {
 
 	public BoundedPlayersQueue players;
