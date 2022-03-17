@@ -9,9 +9,9 @@ public class LookBoardEvent implements Event {
 	
 	public LookBoardEvent(Board board, BoundedPlayersQueue playersQueue) {
 		this.message = board.toString() +
-				"\n" + 
+				"\\line" + 
 				"Players queue :" +
-				"\n" +
+				"\\line" +
 				playersQueue.toString();	
 	}
 	

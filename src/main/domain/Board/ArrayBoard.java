@@ -116,7 +116,7 @@ public class ArrayBoard implements Board {
 		for (BoardCell cell: this.board) {
 			stringRep = stringRep + cell.toString();
 			if (count % this.numberOfColumns == 0) { // completed a row : new line 
-				stringRep = stringRep + "\n";
+				stringRep = stringRep + "\\line";
 			} else {
 				stringRep = stringRep + " "; // row still incomplete : a space for next character
 			}

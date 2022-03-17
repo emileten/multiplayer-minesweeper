@@ -23,7 +23,6 @@ import main.domain.Events.FlaggedEvent;
 import main.domain.Events.GameAlreadyStartedEvent;
 import main.domain.Events.GameStartedEvent;
 import main.domain.Events.MaxNumberOfPlayersReachedEvent;
-import main.domain.Events.NoPlayerInGameEvent;
 import main.domain.Events.PlayerAddedEvent;
 import main.domain.Events.PlayerRemovedEvent;
 import main.domain.Events.UnSupportedPlayerActionEvent;
@@ -45,6 +44,7 @@ class GameTest {
 	void constructorTest() {
 		testGame = new Game();
 		assertFalse(testGame.hasStarted());
+		assertFalse(testGame.hasEnded());
 	    bombLocations = ArrayBoard.smallFactoryBoardBombsLocation();
 		testPlayer = new StringPlayer("testPlayer");
 		startedGameResultEvent = testGame.startGame(testPlayer, numberOfRows, numberOfColumns, playerCapacity, bombLocations);
@@ -52,16 +52,13 @@ class GameTest {
 	
 	
 	@Test
-	void startTestGameStartedEvent() {
+	void startTestGameStartedEvent() {		
 		assertTrue(startedGameResultEvent instanceof GameStartedEvent);
 		assertTrue(testGame.hasStarted());
+		assertFalse(testGame.hasEnded());
 		
 	}
-	
-	@Test
-	void startTestGameAlreadyStartedEvent() {
-		assertTrue(testGame.startGame(testPlayer, 5, 5, 1, bombLocations) instanceof GameAlreadyStartedEvent);
-	}
+
 	
 	@Test
 	void startTestAssignsPlayers() {
@@ -90,18 +87,17 @@ class GameTest {
 		testGame.joinGame(p1);
 		assertTrue(testGame.quitGame(p1) instanceof PlayerRemovedEvent);
 		assertFalse(testGame.hasEnded());
-		assertTrue(testGame.quitGame(testPlayer) instanceof NoPlayerInGameEvent);
+		assertTrue(testGame.quitGame(testPlayer) instanceof PlayerRemovedEvent);
 		assertTrue(testGame.hasEnded());
-
 	}
 	
 	@Test
 	void testLook() {
 		Event resultEvent = testGame.play(testPlayer, "look");
 		String expectedString = testGame.board.toString() + 
-				"\n" +
+				"\\line" +
 				"Players queue :" +
-				"\n" +
+				"\\line" +
 				"testPlayer";
 		assertEquals(expectedString, resultEvent.toString());
 	}
@@ -119,7 +115,7 @@ class GameTest {
 		Event resultEvent = testGame.play(testPlayer, "bye");
 		assertTrue(resultEvent instanceof PlayerRemovedEvent);
 		Event resultEvent2 = testGame.play(p1, "bye");
-		assertTrue(resultEvent2 instanceof NoPlayerInGameEvent);
+		assertTrue(resultEvent2 instanceof PlayerRemovedEvent);
 		assertTrue(testGame.hasEnded());		
 	}
 	
@@ -166,5 +162,19 @@ class GameTest {
 		assertTrue(randomBombIntegers.get(0) >= 0 && randomBombIntegers.get(randomBombIntegers.size()-1) <= 19);
 	}
 	
+	@Test
+	void startTestGameCanRestartTheGame() {
+		// modify a bit the existing game
+		Player p1 = new StringPlayer("newPlayerWhoCanJoin");
+		testGame.joinGame(p1);	
+		testGame.play(testPlayer, "dig 1 1");
+		// try to restart it 
+		assertTrue(testGame.startGame(testPlayer, 5, 5, 1, bombLocations) instanceof GameStartedEvent);
+		// verify it's a fresh new game as much as you can
+		assertEquals(ArrayBoard.smallFactoryBoard(), testGame.board);
+		assertTrue(testGame.players.hasPlayer(testPlayer));
+		assertFalse(testGame.players.hasPlayer(p1));
+		assertFalse(testGame.board.isDug(0));
+	}
 	
 }

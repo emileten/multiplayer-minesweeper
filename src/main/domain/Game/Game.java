@@ -11,6 +11,8 @@ import main.domain.Players.Player;
 
 import java.util.*;
 
+//TODO is it possible to restart this game ? 
+//TODO might not need the 'ended' one .. start is sufficient. 
 public class Game {
 
 	public BoundedPlayersQueue players;
@@ -40,9 +42,6 @@ public class Game {
 	 * otherwise the game starts and it returns GameStartedEvent. 
 	 */
 	public Event startGame(Player player, int numberOfRows, int numberOfColumns, int numberOfPlayers, List<Integer> bombsLocations) {
-		if (this.started == true) {
-			return new GameAlreadyStartedEvent();
-		}
 		if (numberOfPlayers < 1) {
 			return new MaxNumberOfPlayersReachedEvent();
 		}
@@ -55,6 +54,7 @@ public class Game {
 		}
 		this.players = playersQueue;
 		this.started = true;
+		this.ended = false;
 		return new GameStartedEvent();
 	}
 	
@@ -75,19 +75,17 @@ public class Game {
 	/**
 	 * @param player. Player leaving the game. 
 	 * @return NoSuchPlayerInGameEvent if the player isn't in the game
-	 * NoPlayerInGameEvent if removal happened successfully and it was the last player
-	 * PlayerRemovedEvent otherwise.
+	 * PlayerRemovedEvent otherwise. If it was the last player, the game is ended. 
 	 */
 	public Event quitGame(Player player) {
 		try {
 			this.players.removePlayer(player);
 			if (this.players.getNumberOfPlayers()==0) {
 				this.ended = true;
-				return new NoPlayerInGameEvent();
 			}
 			return new PlayerRemovedEvent();
-		} catch (NoSuchPlayerInGameException e) {
-			return new NoSuchPlayerInGameEvent();
+		} catch (NoSuchPlayerInGameException e) { // was last player 
+			return new NoSuchPlayerInGameEvent(); 
 		}
 	}
 	
@@ -171,8 +169,10 @@ public class Game {
 		        	return this.board.dig(position);
 		        } else if (tokens[0].equals("flag")) {
 		        	return this.board.flag(position);
-		        } else {
+		        } else if (tokens[0].equals("deflag")) {
 		        	return this.board.deflag(position);
+		        } else {
+		        	return new UnSupportedPlayerActionEvent();
 		        }
 			}
 			else {
@@ -201,9 +201,11 @@ public class Game {
 	    	return new LookBoardEvent(this.board, this.players);
 	    } else if (tokens[0].equals("help")) {
 	    	return new HelpEvent();
-	    } else { // bye
+	    } else if (tokens[0].equals("bye")) {
 	    	return this.quitGame(player);
-	    } 
+	    } else {
+	    	return new UnSupportedPlayerActionEvent();
+	    }
 					
 	}
 	

@@ -15,6 +15,8 @@ import java.util.List;
 import main.domain.Game.*;
 import main.domain.Players.*;
 
+import main.domain.Events.*;
+
 public class MultiPlayerMineSweeperServerThread implements Runnable {
 
 	private Socket clientSocket;
@@ -30,7 +32,12 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
 	
 	
 	/**
-	 * Defines higher level protocol 
+	 * Defines higher level protocol.
+	 * 
+	 * The server starts by offering the client to either start a new game, if the hosted game hasn't 
+	 * yet started or did start but is ended. Otherwise it offers to join the game. 
+	 * 
+	 * It then waits for the answer, and the session of the player can start with a communication cycle.
 	 * 
 	 * @param input message from client
 	 * 
@@ -41,16 +48,18 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
 		String welcomeString = "Welcome to the multiplayer MineSweeper game ! ";
 		
 		if (this.stateString.equals("WAITING")) { // for first message
-			if (this.hostedGame.hasStarted()) {
-				theOutputString = welcomeString + ServerProtocol.getHumanReadableServerJoinProtocol();
-				this.stateString = "OFFERED_JOIN";
-			} else {
+			
+			if (!this.hostedGame.hasStarted() | (this.hostedGame.hasStarted() && this.hostedGame.hasEnded())) {
 				theOutputString = welcomeString + ServerProtocol.getHumanReadableServerStartProtocol();
-				this.stateString = "OFFERED_START";
-			}					
+				this.stateString = "OFFERED_START";				
+			} else {
+				theOutputString = welcomeString + ServerProtocol.getHumanReadableServerJoinProtocol();
+				this.stateString = "OFFERED_JOIN";				
+			}
+					
 		} else if (this.stateString.equals("OFFERED_START")){ // here the conversation is going on 
 			if (input.matches(ServerProtocol.getRegexServerByeProtocol())) {
-            	theOutputString = "Bye";
+            	theOutputString = "bye";
             } else if (input.matches(ServerProtocol.getRegexServerStartProtocol())) {
     			String[] tokenStrings = input.split("\\s+");		
     		    this.threadPlayer = new StringPlayer(tokenStrings[1]);
@@ -69,7 +78,7 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
     		}
 		} else if (this.stateString.equals("OFFERED_JOIN")){ // here the conversation is going on 
 			if (input.matches(ServerProtocol.getRegexServerByeProtocol())) {
-            	theOutputString = "Bye";
+            	theOutputString = "bye";
             } else if(input.matches(ServerProtocol.getRegexServerJoinProtocol())) {
 				String[] tokenStrings = input.split("//s+");
 				this.threadPlayer = new StringPlayer(tokenStrings[1]);
@@ -80,9 +89,12 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
             }
 		} else if (this.stateString.equals("PLAYING")){ 
 			if (input.matches(ServerProtocol.getRegexServerByeProtocol())) {
-            	theOutputString = "Bye";
+            	theOutputString = "bye";
             } else {
-            	theOutputString = hostedGame.play(this.threadPlayer, input).toString();        
+            	theOutputString = hostedGame.play(this.threadPlayer, input).toString();  
+            	if (theOutputString.matches(ServerProtocol.getRegexServerUnSupportedPlayerActionSignal())) {
+            		theOutputString = GameProtocol.getHumanReadablePlayerProtocol();
+            	}
             }
 		} 
 

@@ -6,6 +6,10 @@ import java.net.*;
 import main.server.ServerProtocol;
 
 public class MultiPlayerMineSweeperClient {
+	
+	public static String parseNewLines(String input) {
+		return input.replace("\\line", "\n");
+	}
 
     public static void main(String[] args) throws IOException {
         
@@ -32,7 +36,8 @@ public class MultiPlayerMineSweeperClient {
             
             // this waits indefinitely for the first message
             while((fromServer = in.readLine()) != null) { // infinite loop
-            	System.out.println(fromServer);	
+            	String fromServerParsed = parseNewLines(fromServer);
+            	System.out.println(fromServerParsed);
             	if (fromServer.matches(ServerProtocol.getRegexServerProtocolEndSignals())) { // end signal 
             		break;
             	}
