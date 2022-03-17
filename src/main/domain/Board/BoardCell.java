@@ -29,7 +29,7 @@ public class BoardCell {
 	public String toString() {
 		if (this.isDug) {
 			if (numberOfAdjacentBombs == 0) {
-				return " ";
+				return "*";
 			} else {
 				return String.valueOf(numberOfAdjacentBombs);				
 			}

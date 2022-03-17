@@ -93,20 +93,20 @@ class ArrayBoardTest {
 	
 	@Test
 	void testToString() {
-		String sameLine = "- - - - -\newline";
+		String sameLine = "- - - - -\\line";
 		assertEquals(sameLine.repeat(5), testBoard.toString());
 		testBoard.dig(0);
-		assertEquals("  - - - -\newline" + sameLine.repeat(4), testBoard.toString());
+		assertEquals("* - - - -\\line" + sameLine.repeat(4), testBoard.toString());
 		testBoard.flag(4);
-		assertEquals("  - - - F\newline" + sameLine.repeat(4), testBoard.toString());
+		assertEquals("* - - - F\\line" + sameLine.repeat(4), testBoard.toString());
 		testBoard.deflag(4);
-		assertEquals("  - - - -\newline" + sameLine.repeat(4), testBoard.toString());
+		assertEquals("* - - - -\\line" + sameLine.repeat(4), testBoard.toString());
 		testBoard.dig(3);
-		assertEquals("  - - 2 -\newline" + sameLine.repeat(4), testBoard.toString());
+		assertEquals("* - - 2 -\\line" + sameLine.repeat(4), testBoard.toString());
 		testBoard.dig(8);
-		assertEquals("  - - 2 -\newline" + "- - - 3 -\newline" + sameLine.repeat(3), testBoard.toString());
+		assertEquals("* - - 2 -\\line" + "- - - 3 -\\line" + sameLine.repeat(3), testBoard.toString());
 		testBoard.dig(23);
-		assertEquals("  - - 2 -\newline" + "- - - 3 -\newline" + sameLine.repeat(2) + "- - - 1 -\newline", testBoard.toString());	
+		assertEquals("* - - 2 -\\line" + "- - - 3 -\\line" + sameLine.repeat(2) + "- - - 1 -\\line", testBoard.toString());	
 	}
 	
 	

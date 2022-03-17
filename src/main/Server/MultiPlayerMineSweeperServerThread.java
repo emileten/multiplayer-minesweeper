@@ -88,16 +88,18 @@ public class MultiPlayerMineSweeperServerThread implements Runnable {
             	theOutputString = ServerProtocol.getHumanReadableServerJoinProtocol();
             }
 		} else if (this.stateString.equals("PLAYING")){ 
-			if (input.matches(ServerProtocol.getRegexServerByeProtocol())) {
-            	theOutputString = "bye";
-            } else {
-            	theOutputString = hostedGame.play(this.threadPlayer, input).toString();  
-            	if (theOutputString.matches(ServerProtocol.getRegexServerUnSupportedPlayerActionSignal())) {
-            		theOutputString = GameProtocol.getHumanReadablePlayerProtocol();
-            	}
-            }
+//			if (input.matches(ServerProtocol.getRegexServerByeProtocol())) {
+//            	theOutputString = "bye";
+//            } else {
+        	theOutputString = hostedGame.play(this.threadPlayer, input).toString();  
+        	if (theOutputString.matches(ServerProtocol.getRegexServerUnSupportedPlayerActionSignal())) {
+        		theOutputString = GameProtocol.getHumanReadablePlayerProtocol();
+        	}
+//            }
 		} 
 
+		System.out.println(this.hostedGame.hasStarted());
+		System.out.println(this.hostedGame.hasEnded());
 		return theOutputString;
 	}
 	

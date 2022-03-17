@@ -11,7 +11,6 @@ import main.domain.Players.Player;
 
 import java.util.*;
 
-//TODO is it possible to restart this game ? 
 //TODO might not need the 'ended' one .. start is sufficient. 
 public class Game {
 
