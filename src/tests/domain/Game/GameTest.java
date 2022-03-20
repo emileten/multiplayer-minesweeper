@@ -23,6 +23,7 @@ import main.domain.Events.FlaggedEvent;
 import main.domain.Events.GameAlreadyStartedEvent;
 import main.domain.Events.GameStartedEvent;
 import main.domain.Events.MaxNumberOfPlayersReachedEvent;
+import main.domain.Events.NotThisPlayerTurnEvent;
 import main.domain.Events.PlayerAddedEvent;
 import main.domain.Events.PlayerRemovedEvent;
 import main.domain.Events.UnSupportedPlayerActionEvent;
@@ -135,6 +136,16 @@ class GameTest {
 	}
 	
 	@Test
+	void testPlayTurnMultiPlayer() {
+		Player p1 = new StringPlayer("newPlayerWhoCanJoin");
+		testGame.joinGame(p1);		
+		assertTrue(testGame.play(p1, "flag 1 1") instanceof NotThisPlayerTurnEvent);
+		assertTrue(testGame.play(testPlayer, "flag 1 1") instanceof FlaggedEvent);
+		assertTrue(testGame.play(testPlayer, "deflag 1 1") instanceof NotThisPlayerTurnEvent);
+		assertTrue(testGame.play(p1, "deflag 1 1") instanceof DeflaggedEvent);
+	}
+	
+	@Test
 	void testPlayTurnBoomEndsGame() {
 		
 		assertTrue(testGame.play(testPlayer, "dig 2 5") instanceof BoomEvent);
@@ -167,7 +178,8 @@ class GameTest {
 		// modify a bit the existing game
 		Player p1 = new StringPlayer("newPlayerWhoCanJoin");
 		testGame.joinGame(p1);	
-		testGame.play(testPlayer, "dig 1 1");
+		// trigger boom to end the game
+		testGame.play(testPlayer, "dig 1 5");
 		// try to restart it 
 		assertTrue(testGame.startGame(testPlayer, 5, 5, 1, bombLocations) instanceof GameStartedEvent);
 		// verify it's a fresh new game as much as you can

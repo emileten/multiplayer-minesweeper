@@ -11,19 +11,14 @@ import main.domain.Players.Player;
 
 import java.util.*;
 
+import java.util.concurrent.*;
 /*
- * TODO might not need the 'ended' one .. start is sufficient. 
- * TODO the player queue is not properly updated
- * TODO the game is not thread safe, while the board is. You want a mechanism to prevent essentially inconsistencies in the values of the 'end' and 'start' fields...
- * One idea : any time you're doing this operation, separate this out in a synchronized method. 
- * If someone tries to end something already ended, raise a flag. Same for started. 
- * Warning : is it only about start and end ? Isn't there something else ? It all boils down to one shared object, the game. What are the modifiable fields ? Wihch are not yet thread safe ? 
+ * Represents a multi player minesweeper game made up of a board and a queue of players. 
  * 
- * Argument one : The board gets modified through an authorization from the player queue only, and the player queue is thread safe, so the board and the player queue are thread safe. 
+ * This object is meant to be a controller for board and player queue objects. 
  * 
- * Argument two : the start and end are not thread safe for now, but you can make them thread safe with the above mechanism. 
+ * Methods to observe or mutate the board or the player queue are thread safe. 
  */
-
 public class Game {
 
 	public BoundedPlayersQueue players;
@@ -52,7 +47,15 @@ public class Game {
 	 * MaxNumberofPlayersReachedEvent if numberOfPlayers is below 1, and doesn't touch the fields.  
 	 * otherwise the game starts and it returns GameStartedEvent. 
 	 */
-	public Event startGame(Player player, int numberOfRows, int numberOfColumns, int numberOfPlayers, List<Integer> bombsLocations) {
+	public synchronized Event startGame(Player player, int numberOfRows, int numberOfColumns, int numberOfPlayers, List<Integer> bombsLocations) {
+		if (this.hasStarted() && !this.hasEnded()) {
+			Event resultEvent = this.joinGame(player);
+			if (resultEvent instanceof MaxNumberOfPlayersReachedEvent) {
+				return new GameAlreadyStartedAndAtCapacity();
+			} else {
+				return resultEvent; // TODO just 'PlayerAdded' is not informative enough. Perhaps 'GameAlreadyStartedPlayerAdded'... or combination of events...
+			}
+		}
 		if (numberOfPlayers < 1) {
 			return new MaxNumberOfPlayersReachedEvent();
 		}
@@ -74,7 +77,7 @@ public class Game {
 	 * @param player. Player joining the game. 
 	 * @return PlayerAddedEvent if added successfully, MaxNumberOfPlayersReachedEvent if game is at capacity. 
 	 */
-	public Event joinGame(Player player) {
+	public synchronized Event joinGame(Player player) {
 		try {
 			this.players.addPlayer(player);
 			return new PlayerAddedEvent();
@@ -88,7 +91,7 @@ public class Game {
 	 * @return NoSuchPlayerInGameEvent if the player isn't in the game
 	 * PlayerRemovedEvent otherwise. If it was the last player, the game is ended. 
 	 */
-	public Event quitGame(Player player) {
+	public synchronized Event quitGame(Player player) {
 		try {
 			this.players.removePlayer(player);
 			if (this.players.getNumberOfPlayers()==0) {
@@ -127,7 +130,7 @@ public class Game {
 	 * If the event associated with the action is an AllDugEvent or a BoomEvent, this method ends the game by turning on the
 	 * this.ended field.
 	 */
-	public Event play(Player player, String action) {
+	public synchronized Event play(Player player, String action) {
 		if (this.hasStarted() == false) {
 			return new GameNotStartedEvent();
 		} else if (!this.players.hasPlayer(player)){
@@ -171,20 +174,23 @@ public class Game {
 	private Event handleGameModificationAction(Player player, String action) {
 		try {
 			Player nextPlayer = this.players.showNextPlayer();
+			Event resultEvent;
 			if (nextPlayer.equals(player)) {
 				String[] tokens = action.split(" ");
 		    	int x = Integer.parseInt(tokens[1]);
 		        int y = Integer.parseInt(tokens[2]);
 		        int position = this.board.convertMatrixIndices(x, y);
 		        if (tokens[0].equals("dig")) {
-		        	return this.board.dig(position);
+		        	resultEvent = this.board.dig(position);
 		        } else if (tokens[0].equals("flag")) {
-		        	return this.board.flag(position);
+		        	resultEvent = this.board.flag(position);
 		        } else if (tokens[0].equals("deflag")) {
-		        	return this.board.deflag(position);
+		        	resultEvent = this.board.deflag(position);
 		        } else {
 		        	return new UnSupportedPlayerActionEvent();
 		        }
+		        this.players.nextPlayer();
+		        return resultEvent;
 			}
 			else {
 				return new NotThisPlayerTurnEvent();

@@ -36,7 +36,8 @@ public class ServerProtocol {
 				+ "|(" + new AllDugEvent().toString() + ")"
 				+ "|(" + new BoomEvent().toString() + ")"
 				+ "|(" + new PlayerRemovedEvent().toString() + ")"
-				+ "|(" + new NoPlayerInGameEvent().toString() + ")";
+				+ "|(" + new NoPlayerInGameEvent().toString() + ")"
+				+ "|(" + new GameAlreadyEndedEvent().toString() + ")";
 	}
 	
 	
