@@ -1,17 +1,13 @@
 package main.domain.Events;
 
-public class BoomEvent implements Event {
 
-	private final String message;
+public class BoomEvent implements Event {
 	
-	public BoomEvent(String message) {
-		this.message = message;
-	}
+	private final String message = "Boom !";
 	
-	@Override
-	public String getMessage() {
-		String out = new String(this.message);
-		return out;
+	public String toString() {
+		return this.message;
 	}
+
 
 }

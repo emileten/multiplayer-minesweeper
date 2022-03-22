@@ -1,38 +1,76 @@
 package main.domain.Board;
 
-import main.domain.Events.Event;
+
+import main.domain.Events.*;
 
 /** Represents the board of a minesweeper game.
- * Abstractly, in a minesweeper game, players manipulate a set of locations that are all hidden in the first place.
- * Players can 'dig' locations to uncover the state of these locations. A location may contain a bomb, or not. 
- * If it does, the player looses. The goal is to uncover all the locations that do not contain a bomb. 
- * The player may also assign the 'flagged' state to a location it believes does contain a bomb. 
- * The goal is to uncover all the locations that do not contain a bomb 
- * 
- * Therefore, a given location has three key binary properties, indicating
- * (1) whether it contains a bomb
- * (2) whether it is dug (uncovered)
- * (3) whether it is flagged
- * 
- * A location can never have at the same time properties (1) and (2). 
- * 
+ * The board of a minesweeper game is made up of an 1D integer indexed collection of BoardCell objects. 
+ * Players can alter one of the three properties of these cells through the board object. 
  * */
 public interface Board {
 	
-	/** attempts to discover a location 
-	 * @param location
-	 * @return an Event object indicating the outcome of the action */
-	public Event dig(Object location);
+	/** attempts to dig into a location 
+	 * @param position
+	 * @return an DigEvent object 
+	 */
+	Event dig(int position);
 	
 	/** attempts to assign the 'flagged' property to a location
 	 * does nothing if it's already assigned to that location, or if it's already dug. 
-	 * @param location */
-	public void flag(Object location);
+	 * @param position
+	 */
+	Event flag(int position);
 
 	/** attempts to turn off the 'flagged' property of a location
 	 * does nothing if it's already non-flagged, or dug. 
-	 * @param location */
-	public void deflag(Object location);
+	 * @param position
+	 */
+	Event deflag(int position);
 	
+	/**
+	 * 
+	 * @param position
+	 * @return True if this location is dug
+	 */
+	boolean isDug(int position);
+	
+	
+	/**
+	 * 
+	 * @param position
+	 * @return True if this location is dug
+	 */
+	boolean isFlagged(int position);
+	 
+	
+	/**
+	 * @return the size of this board
+	 */
+	int getSize();
+	
+	/**
+	 * @return string row wise matrix (2D) representation of the board. 
+	 * the matrix is built row wise. 
+	 */
+	String toString();
+	
+	/**
+	 * @param other an object of the same type
+	 * @return True if this is equal to other*/
+	boolean equals(Object o);
+	
+	/**
+	 * @return a hash code value for this board
+	 */
+	int hashCode();
+	
+	/*
+	 * Input not using zero indexing. 
+	 * @param x row, strictly above 0
+	 * @param y column, strictly above 0
+	 * @return index in the (zero-indexed) 1D array, i.e :
+	 * (numberOfColumns * x) - (numberOfColumns - y) - 1
+	 */
+	int convertMatrixIndices(int x, int y);
 
 }

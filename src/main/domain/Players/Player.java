@@ -4,11 +4,17 @@ package main.domain.Players;
 public interface Player {
 	
 	/** @return the ID of this player */ 
-	public Object getID();
+	Object getID();
 	
+	//TODO I don't think you need this
 	/**
 	 * @param other an object of the same type
 	 * @return True if this is equal to other*/
-	public boolean equals(Player other);
+	boolean equals(Object o);
+	
+	/**
+	 * @return a hash code value for this player
+	 */
+	int hashCode();
 	
 }
