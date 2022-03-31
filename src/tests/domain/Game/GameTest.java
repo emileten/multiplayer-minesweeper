@@ -20,7 +20,6 @@ import main.domain.Events.DeflaggedEvent;
 import main.domain.Events.DugEvent;
 import main.domain.Events.Event;
 import main.domain.Events.FlaggedEvent;
-import main.domain.Events.GameAlreadyStartedEvent;
 import main.domain.Events.GameStartedEvent;
 import main.domain.Events.MaxNumberOfPlayersReachedEvent;
 import main.domain.Events.NotThisPlayerTurnEvent;

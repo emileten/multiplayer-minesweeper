@@ -15,7 +15,6 @@ import java.util.List;
 import main.domain.Game.*;
 import main.domain.Players.*;
 
-import main.domain.Events.*;
 
 public class MultiPlayerMineSweeperServerThread implements Runnable {
 
